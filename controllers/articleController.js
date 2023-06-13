@@ -1,27 +1,27 @@
 const ArticleModel = require("../models/ArticleModel");
 const { v4: uuidv4 } = require("uuid");
+
 const articleCtrl = {
   addArticle: async (req, res) => {
     try {
-      const { name, type, price } = req.body;
-      if (!name || !type || !price) {
+      const { type, image } = req.body;
+      if (!type || !image) {
         res.status(400).json({
           code: 400,
-          description: "Veuillez ajouter des informations supplimentaires",
+          description: "Veuillez ajouter des informations supplémentaires",
           success: false,
           requestDate: Date.now(),
         });
       } else {
         const article = new ArticleModel({
           id: uuidv4(),
-          name: name,
           type: type,
-          price: price,
+          image: image,
         });
         await article.save();
         res.status(200).json({
           code: 200,
-          description: "article ajouter avec success",
+          description: "Article ajouté avec succès",
           success: true,
           requestDate: Date.now(),
         });
@@ -30,21 +30,22 @@ const articleCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+
   fetchArticle: async (req, res) => {
     try {
-      const article = await ArticleModel.find();
-      if (article) {
+      const articles = await ArticleModel.find();
+      if (articles.length > 0) {
         res.status(200).json({
           code: 200,
-          description: "article ajouter avec success",
-          data: article,
+          description: "Articles récupérés avec succès",
+          data: articles,
           success: true,
           requestDate: Date.now(),
         });
       } else {
         res.status(404).json({
           code: 404,
-          description: "article introuvable",
+          description: "Aucun article trouvé",
           success: false,
           requestDate: Date.now(),
         });
@@ -53,15 +54,15 @@ const articleCtrl = {
       return res.status(500).json({ msg: err.message });
     }
   },
+
   updateArticle: async (req, res) => {
     try {
-      const { id, name, type, price, isActive } = req.body;
+      const { id, type, image, isActive } = req.body;
       const article = await ArticleModel.findOne({ _id: id });
 
       if (article) {
-        article.name = name || article.name;
         article.type = type || article.type;
-        article.price = price || article.price;
+        article.image = image || article.image;
         article.isActive = isActive || article.isActive;
         await article.save();
         res.status(200).json({
@@ -87,7 +88,7 @@ const articleCtrl = {
   deleteArticle: async (req, res) => {
     try {
       const id = req.params.id;
-      const article = await ArticleModel.findOne({ id: id });
+      const article = await ArticleModel.findOne({ _id: id });
 
       if (article) {
         article.isArchived = true;
@@ -112,4 +113,5 @@ const articleCtrl = {
     }
   },
 };
+
 module.exports = articleCtrl;

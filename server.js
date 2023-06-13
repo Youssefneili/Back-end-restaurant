@@ -20,7 +20,9 @@ connectDB()
     app.use("/admin", require("./routes/adminRoutes"));
     //article routes
     app.use("/article",require("./routes/articleRouter"));
-
+     //product routes
+     app.use("/product",require("./routes/productRouter"));
+     
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
