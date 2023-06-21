@@ -10,11 +10,13 @@ const adminSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
+  googleId: {
     type: String,
-    required: true,
+    required: false,
+    unique: true,
   },
 });
+
 
 const Admin = mongoose.model('Admin', adminSchema);
 

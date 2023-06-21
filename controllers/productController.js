@@ -1,69 +1,62 @@
-const Product = require("../models/ProductModel");
-const Article = require("../models/ArticleModel");
+const fs = require("fs");
+const Product = require('../models/ProductModel');
 
 const productCtrl = {
-  createProduct: async (req, res) => {
-    const { articleId, name, garnitures, price} = req.body;
+    addProduct: async (req, res) => {
+        try {
+            const { name, garnitures, price } = req.body;
+            const image = req.file;
 
-    try {
-      // Recherche de l'article correspondant
-      const article = await Article.findOne({ _id: articleId });
+            if (!name || !garnitures || !image || !price) {
+                fs.unlinkSync(image.path);
+                return res.status(400).json({
+                    code: 400,
+                    description: "Something missing",
+                    success: false,
+                });
+            }
 
-      if (!article) {
-        console.log("Article not found:", articleId);
-        return res.status(404).json({
-          success: false,
-          message: "Article not found",
-        });
-      } else {
-        // Création du produit avec les détails appropriés
-        const product = new Product({
-          article: articleId,
-          name,
-          garnitures,
-          price,
-        });
+            const product = new Product({
+                name: name,
+                garnitures: garnitures,
+                image: image.filename,
+                price: price,
+            });
 
-        await product.save();
+            await product.save();
 
-        return res.status(201).json({
-          success: true,
-          message: "Product created successfully",
-          data: product,
-        });
-      }
-    } catch (error) {
-      console.log(error)
-      return res.status(500).json({
-        success: false,
-        message: "Internal Server Error",
-        error: error.message,
-      });
-    }
-  },
-  fetchProduct: async (req, res) => {
-    try {
-      const product = await ArticleModel.find();
-      if (product.length > 0) {
-        res.status(200).json({
-          code: 200,
-          description: "Product récupérés avec succès",
-          data: product,
-          success: true,
-          requestDate: Date.now(),
-        });
-      } else {
-        res.status(404).json({
-          code: 404,
-          description: "Aucun produit trouvé",
-          success: false,
-          requestDate: Date.now(),
-        });
-      }
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
+            return res.status(200).json({
+                code: 200,
+                description: 'Product added successfully',
+                success: true,
+                data: product,
+            });
+        } catch (err) {
+            console.log('Error', err);
+            return res.status(500).json({ msg: err.message });
+        }
+    },
+    fetchProduct: async (req, res) => {
+        try {
+            const products = await Product.find();
+            if (products.length > 0) {
+                res.status(200).json({
+                    code: 200,
+                    description: "Produits récupérés avec succès",
+                    data: products,
+                    success: true,
+                });
+            } else {
+                res.status(404).json({
+                    code: 404,
+                    description: "Aucun produit trouvé",
+                    success: false,
+                });
+            }
+        } catch (err) {
+            return res.status(500).json({ msg: err.message });
+        }
+    },
 };
 
 module.exports = productCtrl;

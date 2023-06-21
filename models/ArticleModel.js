@@ -7,8 +7,8 @@ const articleSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    default: ""
-  }
+    required: true
+  },
 });
 
 const Article = mongoose.model('Article', articleSchema);

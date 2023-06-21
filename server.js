@@ -20,9 +20,11 @@ connectDB()
     app.use("/admin", require("./routes/adminRoutes"));
     //article routes
     app.use("/article",require("./routes/articleRouter"));
+    app.use("/uploads", express.static("uploads"));
      //product routes
-     app.use("/product",require("./routes/productRouter"));
-     
+    app.use("/product",require("./routes/productRouter"));
+    //order routes
+    app.use('/orders', require('./routes/orderRoutes'));
     app.listen(port, () => {
       console.log(`Server is running on port ${port}`);
     });
